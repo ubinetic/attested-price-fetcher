@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config>
+        <domain includeSubdomains="true">binance.com</domain>
+        <pin-set>
+            <pin digest="SHA-256">xymSFntBBCvHvhzN0k4OL2MByFHikwBtnK5pzKIlOdc=</pin>
+        </pin-set>
+    </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">binance.us</domain>
+        <pin-set>
+            <pin digest="SHA-256">wTYPPz4Qi6PQe/h0xQNeh0dEyRr0/2aZuXoj/1qAIh8=</pin>
+        </pin-set>
+    </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">kraken.com</domain>
+        <pin-set>
+            <pin digest="SHA-256">UaIKQX39Xe9SaitS1d9YtwlK5U2XFIHEdoPP/uaKX2Q=</pin>
+        </pin-set>
+    </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">bitfinex.com</domain>
+        <pin-set>
+            <pin digest="SHA-256">N+pjN7gSsXKV/A1bjJRqsT0G7VXqVUUA3CT19l/oKFg=</pin>
+        </pin-set>s
+    </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">coinbase.com</domain>
+        <pin-set>
+            <pin digest="SHA-256">gf4fBVhty3bYQLLNfg7p9P6yMWIcnAdwelNrGJK+y08=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>
