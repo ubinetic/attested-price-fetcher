@@ -1,28 +1,28 @@
 package com.ubinetic.attested.fetcher.utils
 
-import com.ubinetic.attested.fetcher.models.Price
-import com.ubinetic.attested.fetcher.toHex
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
+import java.security.cert.Certificate
+import javax.net.ssl.HttpsURLConnection
 
 class Networking {
     companion object {
         val BASE_URL = "https://price-broadcaster-backend.dev.gke.papers.tech"
 
-        fun publishDevice(attestation: String, certificateChain: String) {
+        fun publishDevice(certificateChain: String) {
             val jsonPayload = JSONObject()
-            jsonPayload.put("attestation", attestation)
             jsonPayload.put("certificate_chain", certificateChain)
             postJsonObject(jsonPayload, "/api/devices/")
         }
 
-        fun publishPrice(price: Price) {
+        fun publishObservation(attestation: String) {
             val jsonPayload = JSONObject()
-            jsonPayload.put("packed_payload", price.pack().toHex())
-            jsonPayload.put("signature", Crypto.priceSigner(price))
-            jsonPayload.put("public_key", Crypto.getEncodedPublicKey())
-            postJsonObject(jsonPayload, "/api/prices/")
+            jsonPayload.put("attestation", attestation)
+            jsonPayload.put("device", Crypto.getEncodedPublicKey())
+            postJsonObject(jsonPayload, "/api/observations/")
         }
 
         fun postJsonObject(jsonPayload: JSONObject, endPoint: String) {
@@ -35,12 +35,66 @@ class Networking {
                     urlConnection.setRequestMethod("POST")
                     urlConnection.setRequestProperty("Content-Type", "application/json; utf-8")
                     urlConnection.setDoOutput(true)
-                    urlConnection.outputStream.write(jsonString.toByteArray(), 0, jsonString.toByteArray().size)
+                    urlConnection.outputStream.write(
+                        jsonString.toByteArray(),
+                        0,
+                        jsonString.toByteArray().size
+                    )
                     urlConnection.responseCode
                 } finally {
                     urlConnection.disconnect()
                 }
             }.start()
+        }
+
+        fun getCertificatePin(certificate: Certificate): ByteArray {
+            val md = MessageDigest.getInstance("SHA-256")
+            val digest = md.digest(certificate.publicKey.encoded)
+            return digest
+        }
+
+        fun fetchString(
+            url: URL,
+            success: (String, ByteArray) -> Unit,
+            error: (Exception) -> Unit
+        ) {
+            val urlConnection: HttpsURLConnection = url.openConnection() as HttpsURLConnection
+            Thread {
+                try {
+                    val payload = urlConnection.inputStream.bufferedReader().readLine()
+                    val certificateSha256 =
+                        getCertificatePin(urlConnection.serverCertificates.first())
+                    success(payload, certificateSha256)
+                } catch (exception: Exception) {
+                    error(exception)
+                } finally {
+                    urlConnection.disconnect()
+                }
+            }.start()
+        }
+
+        fun fetchJsonArray(
+            url: URL,
+            success: (JSONArray, ByteArray) -> Unit,
+            error: (Exception) -> Unit
+        ) {
+            fetchString(
+                url,
+                { payload, certificatePin -> success(JSONArray(payload), certificatePin) },
+                error
+            )
+        }
+
+        fun fetchJsonObject(
+            url: URL,
+            success: (JSONObject, ByteArray) -> Unit,
+            error: (Exception) -> Unit
+        ) {
+            fetchString(
+                url,
+                { payload, certificatePin -> success(JSONObject(payload), certificatePin) },
+                error
+            )
         }
     }
 }

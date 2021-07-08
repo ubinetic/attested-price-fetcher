@@ -22,7 +22,6 @@ import java.security.spec.ECGenParameterSpec
 
 class Crypto {
     companion object {
-
         val SPSIG_PREFIX = "36f02c34".hexStringToByteArray()
         val P2PK_PREFIX = "03b28b7f".hexStringToByteArray()
 

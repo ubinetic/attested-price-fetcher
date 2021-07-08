@@ -10,11 +10,11 @@ android {
 
     defaultConfig {
         applicationId "com.ubinetic.attested.fetcher"
-        minSdkVersion 30
+        minSdkVersion 29
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.0"
-        buildConfigField "String", "SAFETYNET_KEY", '"__REPLACE_BY_CI__"'
+        versionCode 3
+        versionName "1.1.1"
+        buildConfigField "String", "SAFETYNET_KEY", '"AIzaSyAPye5g25MGLtcku6DCAfUU3ZMCzhlg_Gw"'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -45,16 +45,14 @@ android {
         exclude 'META-INF/ASL2.0'
         exclude("META-INF/*.kotlin_module")
     }
-
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.google.http-client:google-http-client-jackson2:1.34.1"
     implementation "com.google.android.gms:play-services-safetynet:17.0.0"
-
     implementation "com.rfksystems:blake2b:1.0.0"
     implementation "com.madgag.spongycastle:prov:1.58.0.0"
     implementation "org.bitcoinj:bitcoinj-core:0.15.10"
-
+    testImplementation "junit:junit:4.13.2"
 }
